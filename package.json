@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ith-harvey/hubot-hello-join/issues"
   },
-  "homepage": "https://github.com/ith-harvey/hubot-hello-join#readme"
+  "homepage": "https://github.com/ith-harvey/hubot-hello-join#readme",
+  "dependencies": {
+    "request-promise": "^4.2.2"
+  }
 }
