@@ -1,6 +1,6 @@
 {
-  "name": "hubot-hello-join",
-  "version": "1.0.0",
+  "name": "hubot-channel-welcome",
+  "version": "1.0.1",
   "description": "hubot that allows the creator to specify a channel and if they join it, to send a private DM message to the new user.",
   "main": "index.js",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ith-harvey/hubot-hello-join.git"
+    "url": "git+https://github.com/ith-harvey/hubot-channel-welcome.git"
   },
   "author": "ith-harvey",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/ith-harvey/hubot-hello-join/issues"
+    "url": "https://github.com/ith-harvey/hubot-channel-welcome/issues"
   },
-  "homepage": "https://github.com/ith-harvey/hubot-hello-join#readme",
+  "homepage": "https://github.com/ith-harvey/hubot-channel-welcome#readme",
   "dependencies": {
     "request-promise": "^4.2.2"
   }
