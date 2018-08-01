@@ -1,6 +1,6 @@
 {
   "name": "hubot-channel-welcome",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "hubot that allows the creator to specify a channel and if they join it, to send a private DM message to the new user.",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/ith-harvey/hubot-channel-welcome#readme",
   "dependencies": {
-    "request-promise": "^4.2.2"
+    "ddp": "^0.12.1",
+    "ddp-login": "^1.0.10",
+    "hubot-doge-utility-functions": "^1.4.2"
   }
 }

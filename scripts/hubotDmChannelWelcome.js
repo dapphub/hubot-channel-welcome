@@ -1,18 +1,113 @@
 
-const {RBU, FU} = require('hubot-doge-utility-functions')
+const TxtResp = require('./responses.js')
+const {RBU} = require('hubot-doge-utility-functions')
+/**
+ * Sets up websocket with rocket.chat server and runs "getUserRoles" method.
+ *
+ * I modified the original version by John Szaszvari <jszaszvari@gmail.com>
+ * Git Repo:  https://github.com/jszaszvari/rocketchat-ddp-listener
+ *
+ */
 
-module.exports = robot => {
+//authToken that we got from the Rocket.Chat API (requires
+//process.env.ROCKETCHAT_PASSWORD, process.env.ROCKETCHAT_USER and process.env.ROCKETCHAT_URL to be set)
+function runWebhookWelcomeDM() {
+  RBU.getAuthToken().then(res => {
+    console.log('authToken -> ', res)
+    const authToken = res.data.authToken
 
-  robot.enter( msg => {
-    if (msg.message.user.room === 'general-internal') {
-      // send DM to user
-      RBU.sendUserMessage("Passage from Benjamin Franklin regarding his club JUNTO:\n\nI should have mentioned before that in the autumn of the preceding year [1727], I had form’d most of my ingenious acquaintance into a club of mutual improvement, which we called the JUNTO.\n\nThe rules that I drew up required that every member, in his turn, should produce one or more queries on any point of Morals, Politics, or Natural Philosophy, to be discuss’d by the company; and once in three months produce and read an essay of his own writing on any subject he pleased. Our debates were to be under the direction of a president and to be conducted in the sincere spirit of inquiry after truth, without fondness for dispute, or desire of victory; and, to prevent warmth [heatedness] , all expressions of positiveness in opinions, or direct contradiction, were after some time made contraband and prohibited under small pecuniary penalties [monetary fines]...\n\nOur club, the Junto, was found so useful and afforded such satisfaction to the members that several were desirous of introducing their friends, which could not well be done without exceeding what we had settled as a convenient number, viz. [namely], twelve. We had from the beginning made it a rule to keep our institution a secret, which was pretty well observ’d; the intention was to avoid applications of improper persons for admittance, some of whom, perhaps, we might find it difficult to refuse. I was one of those who were against any addition to our number, but, instead of it...", robot, msg.message.user.name)
+    const DDP = require("ddp");
+    const login = require("ddp-login");
+    process.env.METEOR_TOKEN = authToken;
 
-      RBU.sendUserMessage("\n\n\nFranklin  compiled  questions  for  Junto  members  to  ask themselves on the morning of each weekly meeting:\n\n\n1. Have you met with any thing in the author you last read, remarkable, or suitable to be communicated to the Junto? particularly in history, morality, poetry, physic, travels, mechanic arts, or other parts of knowledge.\n\n2. What new story have you lately heard agreeable for telling in conversation?\n\n3. Hath any citizen in your knowledge failed in his business lately, and what have you heard of the cause?\n\n4. Have you lately heard of any citizen ’ s thriving well, and by what means?\n\n5. Have you lately heard how any present rich man, here or elsewhere, got his estate?\n\n6. Do you know of any fellow citizen, who has lately done a worthy action, deserving praise and imitation? or who has committed an error proper for us to be warned against and avoid?\n\n7. What unhappy effects of intemperance have you lately observed or heard? of imprudence?  of passion? or of any other vice or folly?\n\n8. What happy effects of temperance? of prudence? of moderation? or of any other virtue?\n\n9. Have you or any of your acquaintance been lately sick or wounded? If so, what remedies were used, and what were their effects?\n\n10.  Who do you know that are shortly going voyages or journeys, if one should have occasion to send by them?\n\n11. Do you think of any thing at present, in which the Junto may be serviceable to mankind? to their country, to t heir friends, or to themselves?\n\n12. Hath any deserving stranger arrived in town since last meeting, that you heard of? and what have you heard or observed of his character or merits? and whether think you, it lies in the power of the Junto to oblige him, or encourage him as he deserves?\n\n13. Do you know of any deserving young beginner lately set up, whom it lies in the power of the Junto any way to encourage?\n\n14. Have you lately observed any defect in the laws of your country, [of] which it would be proper to move the legislature for an amendment? Or do you know of any beneficial law that is wanting?\n\n15. Have you lately observed any encroachment on the just liberties of the people?\n\n16. Hath any body attacked your reputation lately? and what can the Junto do towards securing it?\n\n17. Is there any man whose friendship you want, and which the Junto or any of them, can procure for you?\n\n18.  Have you lately heard any member’s character attacked, and how have you defended it?\n\n19. Hath any man injured you, from whom it is in the power of the Junto to procure redress?\n\n20. In what manner can the Junto, or any of them, assist you in any of your honourable designs?\n\n21. Have you any weighty affair in hand, in which you think the advice of the Junto may be of service?\n\n22. What benefits have you lately received from any man not present?\n\n23. Is there any difficulty in matters of opinion, of justice, and injustice, which you would gladly have discussed at this time\n\n24. Do you see any thing amiss in the present customs or proceedings of the Junto, which might be amended?", robot, msg.message.user.name)
+    const ddpClient = new DDP({
 
-RBU.sendUserMessage("\n\nAny person to be qualified [for Junto membership], to stand up, and lay his hand on his breast, and be asked these questions; viz.\n\n1. Have you any particular disrespect to any present members?  Answer. I have not.\n\n2. Do you sincerely declare that you love mankind in general; of what profession or religion soever? Answer. I do.\n\n3. Do you think any person ought to be harmed in his body, name or goods, for mere speculative opinions, or his external way of worship?  Ans.  No.\n\n4. Do you love truth’s sake, and will you endeavour impartially to find and receive it yourself and communicate it to others?  Answ.  Yes.", robot, msg.message.user.name)
-    }
+      // Address of the Rocket.Chat server you want to connect to
+      host: process.env.ROCKETCHAT_WEBSOC_URL,
+
+      // Port of the Rocket.Chat server.
+      port: process.env.ROCKETCHAT_WEBSOC_PORT,
+
+      // if server doesn't have ssl remove line below
+      //ssl: true,
+      maintainCollections: true
+    });
+
+    ddpClient.connect(function(err) {
+      if (err) throw err;
+
+
+      login(ddpClient, {
+        env: "METEOR_TOKEN",
+        method: "token",
+        retry: 5
+
+      }, function(error, userInfo) {
+          if (error) {
+            // Something went wrong...
+            console.log(error)
+
+          } else {
+            // We are now logged in, with userInfo.token as our session auth token.
+            token = userInfo.token;
+            console.log("Authentication Sucessful.\n");
+
+            // Subscribe to a message stream from a channel or group
+            console.log("Attempting to subscribe to the Group/Channel now.\n");
+            ddpClient.subscribe("stream-room-messages", [process.env.ROCKETCHAT_WEBSOC_ROOMID, false], function() {
+              console.log(ddpClient.collections);
+              console.log("Subscription Complete.\n");
+
+
+              // Display the stream on console so we can see its working
+              console.log("\nStarting live-stream of messages.:\n");
+              ddpClient.on("message", function(msg) {
+                msg = JSON.parse(msg)
+                console.log('incoming', msg)
+
+                if (msg.fields) {
+
+                  // if user is added -> 'au'
+                  if (msg.fields.args[0].t === 'au') {
+
+                    // gets the roomId of the DM conversation between the bot and newly added user
+                    ddpClient.call('createDirectMessage', [msg.fields.args[0].msg], function(error, resp) {
+                      if (error) {
+                        console.log('here error ->', error)
+                      }
+
+                      ddpClient.call('sendMessage',[{
+                        'rid': resp.rid,
+                        'msg': TxtResp.bFrankFirstP()}], function (error, resp) {
+
+                        console.log('resp', resp)
+                        console.log('error', error)
+                        })
+
+
+                      ddpClient.call('sendMessage',[{
+                        'rid': resp.rid,
+                        'msg': TxtResp.bFrankReflectQ()}], function (error, resp) {
+
+                        console.log('resp', resp)
+                        console.log('error', error)
+                        })
+
+                      ddpClient.call('sendMessage',[{
+                        'rid': resp.rid,
+                        'msg': TxtResp.bFrankMemberQ()}], function (error, resp) {
+                        console.log('resp', resp)
+                        console.log('error', error)
+                      })
+                    })
+                  }
+                }
+              })
+            })
+          }
+        }
+      )
+    })
   })
-
-
 }
+module.exports = {runWebhookWelcomeDM}
