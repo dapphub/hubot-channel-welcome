@@ -19,7 +19,6 @@
   "dependencies": {
     "ddp": "^0.12.1",
     "ddp-login": "^1.0.10",
-    "hoek": "^5.0.4",
     "hubot": "^3.1.1",
     "hubot-doge-utility-functions": "^2.0.1",
     "hubot-redis-brain": "^1.0.0",
