@@ -11,7 +11,7 @@ const {RBU} = require('hubot-doge-utility-functions')
 
 //authToken that we got from the Rocket.Chat API (requires
 //process.env.ROCKETCHAT_PASSWORD, process.env.ROCKETCHAT_USER and process.env.ROCKETCHAT_URL to be set)
-function hubotWelcomeDM() {
+function runWebhookWelcomeDM() {
   RBU.getAuthToken().then(res => {
     console.log('authToken -> ', res)
     const authToken = res.data.authToken
@@ -110,4 +110,4 @@ function hubotWelcomeDM() {
     })
   })
 }
-module.exports = {hubotWelcomeDM}
+module.exports = {runWebhookWelcomeDM}
