@@ -28,7 +28,7 @@ module.exports = (robot) => {
       port: process.env.ROCKETCHAT_WEBSOC_PORT,
 
       // if server doesn't have ssl remove line below
-      //ssl: true,
+      ssl: true,
       maintainCollections: true
     });
 
