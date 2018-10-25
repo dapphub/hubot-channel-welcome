@@ -1,4 +1,3 @@
-
 const TxtResp = require('./responses.js')
 const {RBU} = require('hubot-doge-utility-functions')
 /**
@@ -11,7 +10,7 @@ const {RBU} = require('hubot-doge-utility-functions')
 
 //authToken that we got from the Rocket.Chat API (requires
 //process.env.ROCKETCHAT_PASSWORD, process.env.ROCKETCHAT_USER and process.env.ROCKETCHAT_URL to be set)
-function runWebhookWelcomeDM() {
+module.exports = (robot) => {
   RBU.getAuthToken().then(res => {
     console.log('authToken -> ', res)
     const authToken = res.data.authToken
@@ -42,7 +41,7 @@ function runWebhookWelcomeDM() {
         method: "token",
         retry: 5
 
-      }, function(error, userInfo) {
+      }, async function (error, userInfo) {
           if (error) {
             // Something went wrong...
             console.log(error)
@@ -54,7 +53,9 @@ function runWebhookWelcomeDM() {
 
             // Subscribe to a message stream from a channel or group
             console.log("Attempting to subscribe to the Group/Channel now.\n");
-            ddpClient.subscribe("stream-room-messages", [process.env.ROCKETCHAT_WEBSOC_ROOMID, false], function() {
+            const roomId = await RBU.getRoomIdByName(robot, process.env.ROCKETCHAT_WEBSOC_ROOMNAME)
+
+            ddpClient.subscribe("stream-room-messages", [roomId, false], function() {
               console.log(ddpClient.collections);
               console.log("Subscription Complete.\n");
 
@@ -110,4 +111,3 @@ function runWebhookWelcomeDM() {
     })
   })
 }
-module.exports = {runWebhookWelcomeDM}
